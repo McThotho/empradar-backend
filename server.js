@@ -1,5 +1,5 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
+const Database = require("better-sqlite3");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 
@@ -10,13 +10,14 @@ const DB_PATH = "./tasks.db";
 app.use(cors());
 app.use(express.json());
 
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error("❌ Failed to connect to database:", err.message);
-  } else {
-    console.log("✅ Connected to SQLite database.");
-  }
-});
+let db;
+try {
+  db = new Database(DB_PATH);
+  console.log("✅ Connected to SQLite database.");
+} catch (err) {
+  console.error("❌ Failed to connect to database:", err.message);
+}
+
 
 // Create users table if not exists
 db.run(`
